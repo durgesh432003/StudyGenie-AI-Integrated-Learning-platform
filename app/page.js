@@ -36,7 +36,7 @@ const LandingPage = () => {
           <span className="px-2 py-1 text-xs text-white bg-blue-600 rounded-full">
             New
           </span>
-          <span className="text-sm">Adiaparmar : AI-Powered Exam Prep</span>
+          <span className="text-sm" >Durgesh Rane : AI-Integrated Learning Platform</span>
           <ArrowRight className="w-4 h-4" />
         </div>
       </div>
@@ -73,7 +73,7 @@ const LandingPage = () => {
                 </div>
               </h1>
               <p className="text-gray-600 max-w-2xl mx-auto text-base md:text-xl px-4">
-                Your AI Exam Prep Companion: Effortless Study Material at Your
+                Your AI Learning Companion: Effortless Study Material at Your
                 Fingertips
               </p>
               <div className="flex justify-center mt-6 md:mt-8">
@@ -102,7 +102,7 @@ const LandingPage = () => {
 
       {/* Footer */}
       <footer className="text-center py-4 md:py-6 text-gray-600 text-sm md:text-base">
-        Made with ❤️ by Aditya Kumar Singh
+        Made with ❤️ by Durgesh Rane
       </footer>
     </div>
   );
