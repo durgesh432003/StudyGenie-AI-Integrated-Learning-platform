@@ -94,7 +94,7 @@ export async function POST(req) {
         createdBy: createdBy,
         courseLayout: aiResult,
       })
-      .returning({ resp: STUDY_MATERIAL_TABLE });
+      .returning({ resp: STUDY_MATERIAL_TABLE, courseId: STUDY_MATERIAL_TABLE.courseId });
 
     console.log("Course created:", dbResult[0].resp);
 
@@ -103,6 +103,7 @@ export async function POST(req) {
       name: "notes.generate",
       data: {
         course: dbResult[0].resp,
+        courseId: dbResult[0].courseId,
       },
     });
 

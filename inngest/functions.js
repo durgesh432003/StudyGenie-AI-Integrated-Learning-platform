@@ -29,7 +29,7 @@ export const GenerateNotes = inngest.createFunction(
   { id: "generate-course" },
   { event: "notes.generate" },
   async ({ event, step }) => {
-    const { course } = event.data;
+    const { course, courseId } = event.data;
 
     try {
       // Generate notes for each chapter with ai
@@ -53,7 +53,7 @@ export const GenerateNotes = inngest.createFunction(
             // Insert notes into CHAPTER_NOTES_TABLE
             await db.insert(CHAPTER_NOTES_TABLE).values({
               chapterId: index + 1, // Using 1-based indexing for chapters
-              courseId: course?.courseId,
+              courseId: courseId,
               notes: aiResp,
             });
           })
@@ -71,7 +71,7 @@ export const GenerateNotes = inngest.createFunction(
             .set({
               status: "Ready",
             })
-            .where(eq(STUDY_MATERIAL_TABLE.courseId, course?.courseId));
+            .where(eq(STUDY_MATERIAL_TABLE.courseId, courseId));
           return "Success";
         }
       );
@@ -90,7 +90,7 @@ export const GenerateNotes = inngest.createFunction(
         .set({
           status: "Error",
         })
-        .where(eq(STUDY_MATERIAL_TABLE.courseId, course?.courseId));
+        .where(eq(STUDY_MATERIAL_TABLE.courseId, courseId));
 
       throw error; // Re-throw to let Inngest handle the error
     }
@@ -135,5 +135,43 @@ export const GenerateStudyTypeContent = inngest.createFunction(
 
       return "Data Inserted";
     });
+  }
+);
+
+export const CreateNewUser = inngest.createFunction(
+  { id: "create-new-user" },
+  { event: "user.create" },
+  async ({ event, step }) => {
+    const { user } = event.data;
+
+    const existingUser = await step.run("Check for Existing User", async () => {
+      const result = await db
+        .select()
+        .from(USER_TABLE)
+        .where(eq(USER_TABLE.email, user.primaryEmailAddress.emailAddress));
+      return result.length > 0 ? result[0] : null;
+    });
+
+    if (existingUser) {
+      return { status: "success", message: "User already exists" };
+    }
+
+    const newUser = await step.run("Create New User", async () => {
+      const stripe = new Stripe(process.env.STRIPE_SECRET_KEY);
+      const customer = await stripe.customers.create({
+        email: user.primaryEmailAddress.emailAddress,
+        name: user.fullName,
+      });
+
+      const result = await db.insert(USER_TABLE).values({
+        fullName: user.fullName,
+        email: user.primaryEmailAddress.emailAddress,
+        clerkId: user.id,
+        stripeCustomerId: customer.id,
+      });
+      return result;
+    });
+
+    return { status: "success", user: newUser };
   }
 );

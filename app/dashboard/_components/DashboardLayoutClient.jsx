@@ -1,26 +1,42 @@
 "use client";
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useContext } from "react";
 import SideBar from "./SideBar";
 import DashboardHeader from "./DashboardHeader";
 import { CourseCountContext } from "../../_context/CourseCountContext";
 import { useUser } from "@clerk/nextjs";
 import { useRouter } from "next/navigation";
+import { UserDetailContext } from "@/app/_context/UserDetailContext";
+import axios from "axios";
 
 function DashboardLayoutClient({ children }) {
   const [totalCourse, setTotalCourse] = useState(0);
   const { user, isLoaded } = useUser();
   const router = useRouter();
   const [mounted, setMounted] = useState(false);
+  const { setUserDetail } = useContext(UserDetailContext);
 
   useEffect(() => {
     setMounted(true);
   }, []);
 
   useEffect(() => {
+    if (isLoaded && user) {
+      getUserDetail();
+    }
+  }, [isLoaded, user]);
+
+  useEffect(() => {
     if (isLoaded && !user) {
       router.push("/sign-in");
     }
   }, [isLoaded, user, router]);
+
+  const getUserDetail = async () => {
+    const result = await axios.get(
+      "/api/get-user-detail/" + user.primaryEmailAddress.emailAddress
+    );
+    setUserDetail(result.data);
+  };
 
   if (!mounted || !isLoaded || !user) {
     return (

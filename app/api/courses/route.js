@@ -25,3 +25,15 @@ export async function GET(req) {
 
   return NextResponse.json({ result: course[0] });
 }
+
+export async function DELETE(req) {
+  const reqUrl = req.url;
+  const { searchParams } = new URL(reqUrl);
+  const courseId = searchParams.get("courseId");
+
+  const result = await db
+    .delete(STUDY_MATERIAL_TABLE)
+    .where(eq(STUDY_MATERIAL_TABLE.courseId, courseId));
+
+  return NextResponse.json({ result: result });
+}

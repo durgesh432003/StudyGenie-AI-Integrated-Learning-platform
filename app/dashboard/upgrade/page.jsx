@@ -24,16 +24,54 @@ export default function PricingPlans() {
   };
 
   const OnPaymentManage = async () => {
-    if (!userDetail?.customerId) {
-      console.error("Customer ID not found.");
-      return;
-    }
-    const result = await axios.post("/api/payment/manage-payment", {
-      customerId: userDetail.customerId,
-    });
+    try {
+      if (!userDetail) {
+        console.error("User details not loaded yet.");
+        return;
+      }
+      
+      if (!userDetail.customerId) {
+        // If customer ID is missing, create a new Stripe customer
+        try {
+          console.log("Customer ID not found. Creating a new Stripe customer...");
+          const createCustomerResponse = await axios.post("/api/create-user", {
+            user: {
+              primaryEmailAddress: { emailAddress: userDetail.email },
+              fullName: userDetail.userName
+            },
+          });
+          
+          // Update the user detail with the new customer ID
+          if (createCustomerResponse.data && createCustomerResponse.data.customerId) {
+            console.log("New customer created:", createCustomerResponse.data.customerId);
+            userDetail.customerId = createCustomerResponse.data.customerId;
+          } else {
+            console.error("Failed to create a new customer");
+            return;
+          }
+        } catch (createError) {
+          console.error("Error creating customer:", createError);
+          return;
+        }
+      }
+      
+      // Now proceed with the payment management
+      const result = await axios.post("/api/payment/manage-payment", {
+        customerId: userDetail.customerId,
+      });
 
-    console.log(result.data);
-    window.location.assign(result.data.portalSession.url);
+      console.log(result.data);
+      if (result.data.portalSession?.url) {
+        window.location.assign(result.data.portalSession.url);
+      } else {
+        console.error("No portal URL received from Stripe");
+      }
+    } catch (error) {
+      console.error(
+        "Error managing payment:",
+        error.response?.data || error.message
+      );
+    }
   };
   return (
     <div className="w-full max-w-5xl mx-auto p-6">
@@ -108,7 +146,14 @@ export default function PricingPlans() {
             </div>
           </div>
 
-          {userDetail?.member == false ? (
+          {!userDetail ? (
+            <button
+              disabled
+              className="mt-6 w-full max-w-xs py-2 px-4 bg-gray-400 text-white rounded-md"
+            >
+              Loading...
+            </button>
+          ) : userDetail.member === false ? (
             <button
               className="mt-6 w-full max-w-xs py-2 px-4 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors"
               onClick={OnCheckoutClick}

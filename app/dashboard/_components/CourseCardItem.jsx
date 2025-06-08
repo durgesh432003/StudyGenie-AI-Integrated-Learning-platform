@@ -4,8 +4,30 @@ import { Progress } from "@/components/ui/progress";
 import Image from "next/image";
 import Link from "next/link";
 import React from "react";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from "@/components/ui/alert-dialog.jsx";
+import axios from "axios";
+import { toast } from "sonner";
 
 function CourseCardItem({ course }) {
+  const handleDelete = async () => {
+    const result = await axios.delete(
+      `/api/courses?courseId=${course.courseId}`
+    );
+    if (result) {
+      toast("Course Deleted Successfully");
+      window.location.reload();
+    }
+  };
   return (
     <div className="border rounded-lg shadow-md p-5">
       <div>
@@ -26,7 +48,7 @@ function CourseCardItem({ course }) {
           <Progress value={0} />
         </div>
 
-        <div className="mt-6 flex justify-end items-baseline">
+        <div className="mt-6 flex justify-between items-baseline">
           {course?.status == "Generating" ? (
             <Button disabled>Generating</Button>
           ) : (
@@ -34,6 +56,26 @@ function CourseCardItem({ course }) {
               <Button>View</Button>
             </Link>
           )}
+          <AlertDialog>
+            <AlertDialogTrigger asChild>
+              <Button variant="destructive">Delete</Button>
+            </AlertDialogTrigger>
+            <AlertDialogContent>
+              <AlertDialogHeader>
+                <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
+                <AlertDialogDescription>
+                  This action cannot be undone. This will permanently delete
+                  your account and remove your data from our servers.
+                </AlertDialogDescription>
+              </AlertDialogHeader>
+              <AlertDialogFooter>
+                <AlertDialogCancel>Cancel</AlertDialogCancel>
+                <AlertDialogAction onClick={handleDelete}>
+                  Continue
+                </AlertDialogAction>
+              </AlertDialogFooter>
+            </AlertDialogContent>
+          </AlertDialog>
         </div>
       </div>
     </div>

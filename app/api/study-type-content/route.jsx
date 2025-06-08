@@ -7,7 +7,7 @@ export async function POST(req) {
   const { chapters, courseId, type } = await req.json();
 
   // Handle notes generation differently
-  if (type === "notes") {
+  if (type.toLowerCase() === "notes") {
     await inngest.send({
       name: "notes.generate",
       data: {
