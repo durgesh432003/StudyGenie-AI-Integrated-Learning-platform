@@ -14,7 +14,7 @@ const LandingPage = () => {
         </div>
         <div className="flex items-center space-x-2 md:space-x-4">
           <a
-            href="https://github.com/Adiaparmar"
+            href="https://github.com/durgesh432003/StudyGenie-AI-Integrated-Learning-platform"
             target="_blank"
             rel="noopener noreferrer"
             className="px-3 md:px-4 py-2 text-gray-700 hover:text-blue-600 rounded-lg border border-gray-200 flex items-center space-x-1 md:space-x-2 text-sm md:text-base"
