@@ -72,8 +72,8 @@ Before starting, ensure you have the following installed:
 1. **Clone the Repository**
    
    ```
-   git clone https://github.com/YourUsername/AI-Study-Material-Generator.git
-   cd AI-Study-Material-Generator
+   git clone https://github.com/durgesh432003/StudyGenie-AI-Integrated-Learning-platform.git
+   cd StudyGenie-AI-Integrated-Learning-platform
 
 2. **Install Dependencies**
    
@@ -151,9 +151,9 @@ Distributed under the MIT License. See LICENSE for more details.
 ## 📞 Contact
 Project Maintainer:
 
-- Aditya Kumar Singh
-- Email: adiaparmar@gmail.com
-- GitHub: Adiaparmar
+- Durgesh Rane
+- Email: durgeshrane55@gmail.com
+- GitHub: durgesh432003
 
 ---
 Feel free to reach out with any questions, ideas, or feedback!
