@@ -2,7 +2,6 @@
 import React, { useState } from "react";
 import SelectOption from "./_components/SelectOption";
 import { Button } from "@/components/ui/button";
-import TopicInput from "./_components/TopicInput";
 import axios from "axios";
 import { v4 as uuidv4 } from "uuid";
 import { useUser } from "@clerk/nextjs";
