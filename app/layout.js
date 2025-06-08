@@ -1,12 +1,12 @@
 import { ClerkProvider } from "@clerk/nextjs";
 import "./globals.css";
-import { Outfit } from "next/font/google";
+// Remove the next/font import and use CSS imports instead
 import Provider from "./provider";
 import { Toaster } from "@/components/ui/sonner";
 import { UserDetailProvider } from "./_context/UserDetailContext";
 
 export const metadata = {
-  title: "📚 StudyGenie",
+  title: "StudyGenie",
   description: "Generative AI Study Material Generator",
   icons: {
     icon: [
@@ -38,20 +38,19 @@ export const metadata = {
   themeColor: "#4F46E5",
 };
 
-const outfit = Outfit({
-  subsets: ["latin"],
-});
+// Define a className for the font instead of using next/font
+const outfitClassName = "font-outfit";
 
 export default function RootLayout({ children }) {
   return (
     <ClerkProvider
       publishableKey={process.env.NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY}
-      appearance={{ baseTheme: outfit.className }}
+      appearance={{ baseTheme: outfitClassName }}
       dynamic={true}
     >
       <UserDetailProvider>
         <html lang="en">
-          <body className={outfit.className}>
+          <body className={outfitClassName}>
             <Provider>{children}</Provider>
             <Toaster />
           </body>

@@ -2,8 +2,16 @@
 @tailwind components;
 @tailwind utilities;
 
+/* Import Outfit font from Google Fonts */
+@import url('https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&display=swap');
+
 body {
-  font-family: Arial, Helvetica, sans-serif;
+  font-family: 'Outfit', Arial, Helvetica, sans-serif;
+}
+
+/* Add a utility class for the font */
+.font-outfit {
+  font-family: 'Outfit', Arial, Helvetica, sans-serif;
 }
 
 @layer base {
