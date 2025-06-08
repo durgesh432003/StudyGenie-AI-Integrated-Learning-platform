@@ -42,7 +42,14 @@ function SelectOption({ selectedStudyType }) {
               selectedStudyType(option.name);
             }}
           >
-            <Image src={option.icon} alt={option.name} width={50} height={50} />
+            <Image 
+              src={option.icon} 
+              alt={option.name} 
+              width={50} 
+              height={50} 
+              loading="lazy"
+              quality={80}
+            />
             <h2 className="text-sm mt-2">{option.name}</h2>
           </div>
         ))}

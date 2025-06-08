@@ -1,0 +1,18 @@
+[
+  {
+    "courseId": "test-course-1",
+    "courseType": "Exam",
+    "topic": "JavaScript Basics",
+    "difficultyLevel": "Easy",
+    "createdBy": "test1@example.com",
+    "status": "Ready"
+  },
+  {
+    "courseId": "test-course-2",
+    "courseType": "Practice",
+    "topic": "React Hooks",
+    "difficultyLevel": "Moderate",
+    "createdBy": "test1@example.com",
+    "status": "Generating"
+  }
+]

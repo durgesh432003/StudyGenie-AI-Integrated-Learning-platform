@@ -3,13 +3,22 @@ import { ArrowRight, Github } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 
+// Incremental Static Regeneration - revalidate every 24 hours for better performance
+export const revalidate = 86400;
 const LandingPage = () => {
   return (
     <div className="min-h-screen bg-white flex flex-col">
       {/* Navigation Bar */}
       <nav className="flex items-center justify-between p-4 border-b">
         <div className="flex items-center space-x-2">
-          <Image src={"/logo.svg"} alt="logo" width={40} height={40} />
+          <Image 
+            src={"/logo.svg"} 
+            alt="logo" 
+            width={40} 
+            height={40} 
+            priority 
+            loading="eager" 
+          />
           <span className="text-xl md:text-2xl font-bold">Study Genie</span>
         </div>
         <div className="flex items-center space-x-2 md:space-x-4">

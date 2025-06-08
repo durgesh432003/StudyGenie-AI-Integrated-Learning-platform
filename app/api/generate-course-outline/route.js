@@ -60,31 +60,8 @@ export async function POST(req) {
       );
     }
 
-    const PROMPT = `
-        generate a study material for '${topic}' for '${courseType}' 
-        and level of Difficulty will be '${difficultyLevel}' 
-        with course title, summary of course, List of chapters along with the summary and Emoji icon for each chapter, 
-        Topic list in each chapter in JSON format
-      `;
-
-    // Generate course layout using AI
-    const aiResp = await courseOutlineAIModel.sendMessage(PROMPT);
-    
-    console.log("AI Response Text:", aiResp.response.text());
-
-    let aiResult;
-    try {
-      aiResult = JSON.parse(aiResp.response.text());
-    } catch (e) {
-      console.error("Failed to parse AI response:", e);
-      return NextResponse.json(
-        { error: "Invalid JSON response from AI" },
-        { status: 500 }
-      );
-    }
-
-    // Save result along with user input
-    const dbResult = await db
+    // First, create a placeholder entry in the database with "Initializing" status
+    const initialDbResult = await db
       .insert(STUDY_MATERIAL_TABLE)
       .values({
         courseId: courseId,
@@ -92,24 +69,30 @@ export async function POST(req) {
         difficultyLevel: difficultyLevel,
         topic: topic,
         createdBy: createdBy,
-        courseLayout: aiResult,
+        status: "Initializing",
+        courseLayout: {}, // Empty placeholder
       })
-      .returning({ resp: STUDY_MATERIAL_TABLE, courseId: STUDY_MATERIAL_TABLE.courseId });
+      .returning({ id: STUDY_MATERIAL_TABLE.id, courseId: STUDY_MATERIAL_TABLE.courseId });
 
-    console.log("Course created:", dbResult[0].resp);
-
-    //Trigger Inngest function to generate chapter notes
-    const result = await inngest.send({
-      name: "notes.generate",
+    // Offload the AI processing to Inngest background job
+    await inngest.send({
+      name: "course.generate-outline",
       data: {
-        course: dbResult[0].resp,
-        courseId: dbResult[0].courseId,
+        courseId,
+        topic,
+        courseType,
+        difficultyLevel,
+        createdBy,
+        dbRecordId: initialDbResult[0].id
       },
     });
 
-    console.log("Inngest function triggered:", result);
-
-    return NextResponse.json({ result: dbResult[0] });
+    // Return immediately to the client
+    return NextResponse.json({ 
+      success: true, 
+      message: "Course generation started",
+      courseId: initialDbResult[0].courseId
+    });
   } catch (error) {
     console.error("Error in generate-course-outline:", error);
     return NextResponse.json(

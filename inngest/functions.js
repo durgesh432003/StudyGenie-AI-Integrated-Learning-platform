@@ -9,6 +9,7 @@ import {
 import { eq } from "drizzle-orm";
 import Stripe from "stripe";
 import {
+  courseOutlineAIModel,
   generateNotesAiModel,
   GenerateQnAAiModel,
   GenerateQuizAiModel,
@@ -173,5 +174,78 @@ export const CreateNewUser = inngest.createFunction(
     });
 
     return { status: "success", user: newUser };
+  }
+);
+
+// New function to handle course outline generation in the background
+export const GenerateCourseOutline = inngest.createFunction(
+  { id: "generate-course-outline" },
+  { event: "course.generate-outline" },
+  async ({ event, step }) => {
+    const { courseId, topic, courseType, difficultyLevel, createdBy, dbRecordId } = event.data;
+
+    try {
+      // Step 1: Generate the course outline with AI
+      const aiResult = await step.run("Generate Course Outline with AI", async () => {
+        const PROMPT = `
+          generate a study material for '${topic}' for '${courseType}' 
+          and level of Difficulty will be '${difficultyLevel}' 
+          with course title, summary of course, List of chapters along with the summary and Emoji icon for each chapter, 
+          Topic list in each chapter in JSON format
+        `;
+
+        const aiResp = await courseOutlineAIModel.sendMessage(PROMPT);
+        
+        try {
+          return JSON.parse(aiResp.response.text());
+        } catch (e) {
+          console.error("Failed to parse AI response:", e);
+          throw new Error("Invalid JSON response from AI");
+        }
+      });
+
+      // Step 2: Update the database record with the AI-generated content
+      const updateResult = await step.run("Update Course with AI Content", async () => {
+        return await db
+          .update(STUDY_MATERIAL_TABLE)
+          .set({
+            courseLayout: aiResult,
+            status: "Generating", // Will be updated to "Ready" after notes are generated
+          })
+          .where(eq(STUDY_MATERIAL_TABLE.id, dbRecordId))
+          .returning({ 
+            resp: STUDY_MATERIAL_TABLE,
+            courseId: STUDY_MATERIAL_TABLE.courseId 
+          });
+      });
+
+      // Step 3: Trigger the notes generation function
+      await step.run("Trigger Notes Generation", async () => {
+        return await inngest.send({
+          name: "notes.generate",
+          data: {
+            course: updateResult[0].resp,
+            courseId: updateResult[0].courseId,
+          },
+        });
+      });
+
+      return { 
+        status: "success", 
+        message: "Course outline generated and notes generation triggered" 
+      };
+    } catch (error) {
+      console.error("Error in GenerateCourseOutline:", error);
+      
+      // Update the record to show the error
+      await db
+        .update(STUDY_MATERIAL_TABLE)
+        .set({
+          status: "Error",
+        })
+        .where(eq(STUDY_MATERIAL_TABLE.id, dbRecordId));
+      
+      throw error; // Re-throw to let Inngest handle the error
+    }
   }
 );
