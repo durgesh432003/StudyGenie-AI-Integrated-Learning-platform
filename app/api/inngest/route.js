@@ -4,6 +4,7 @@ import {
   CreateNewUser,
   GenerateNotes,
   GenerateStudyTypeContent,
+  GenerateCourseOutline,
   helloWorld,
 } from "@/inngest/functions";
 export const runtime = "edge";
@@ -16,5 +17,6 @@ export const { GET, POST, PUT } = serve({
     CreateNewUser,
     GenerateNotes,
     GenerateStudyTypeContent,
+    GenerateCourseOutline,
   ],
 });

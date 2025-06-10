@@ -20,11 +20,7 @@ function SideBar() {
       icon: Shield,
       path: "/dashboard/upgrade",
     },
-    {
-      name: "Profile",
-      icon: UserCircle,
-      path: "/dashboard/profile",
-    },
+    
   ];
 
   const { totalCourse, setTotlaCourse } = useContext(CourseCountContext);

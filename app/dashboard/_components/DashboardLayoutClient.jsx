@@ -21,7 +21,7 @@ function DashboardLayoutClient({ children }) {
 
   useEffect(() => {
     if (isLoaded && user) {
-      getUserDetail();
+      createOrGetUserDetail();
     }
   }, [isLoaded, user]);
 
@@ -31,11 +31,35 @@ function DashboardLayoutClient({ children }) {
     }
   }, [isLoaded, user, router]);
 
-  const getUserDetail = async () => {
-    const result = await axios.get(
-      "/api/get-user-detail/" + user.primaryEmailAddress.emailAddress
-    );
-    setUserDetail(result.data);
+  const createOrGetUserDetail = async () => {
+    try {
+      // Ensure we have a valid name
+      const userName = user.fullName || 
+        (user.firstName && user.lastName ? `${user.firstName} ${user.lastName}` : 
+        user.firstName || user.lastName || user.primaryEmailAddress.emailAddress.split('@')[0]);
+
+      // First, try to create the user (this will return existing user if already exists)
+      const createResult = await axios.post("/api/create-user", {
+        user: {
+          primaryEmailAddress: { emailAddress: user.primaryEmailAddress.emailAddress },
+          fullName: userName
+        }
+      });
+      
+      setUserDetail(createResult.data);
+    } catch (error) {
+      console.error("Error creating user:", error);
+      
+      // Fallback to get-user-detail if create-user fails
+      try {
+        const result = await axios.get(
+          "/api/get-user-detail/" + user.primaryEmailAddress.emailAddress
+        );
+        setUserDetail(result.data);
+      } catch (getError) {
+        console.error("Error getting user details:", getError);
+      }
+    }
   };
 
   if (!mounted || !isLoaded || !user) {

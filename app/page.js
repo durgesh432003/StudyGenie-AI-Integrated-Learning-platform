@@ -19,7 +19,7 @@ const LandingPage = () => {
             priority 
             loading="eager" 
           />
-          <span className="text-xl md:text-2xl font-bold">Study Genie</span>
+          <span className="text-xl md:text-2xl font-bold">StudyGenie</span>
         </div>
         <div className="flex items-center space-x-2 md:space-x-4">
           <a
@@ -111,7 +111,7 @@ const LandingPage = () => {
 
       {/* Footer */}
       <footer className="text-center py-4 md:py-6 text-gray-600 text-sm md:text-base">
-        Made with ❤️ by Durgesh Rane
+        {/* Made with ❤️ by Durgesh Rane */}
       </footer>
     </div>
   );

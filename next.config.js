@@ -1,13 +1,14 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
-  // Explicitly enable SWC and disable Babel
-  swcMinify: true,
-  experimental: {
-    forceSwcTransforms: true,
-  },
-  
-  // Add any other Next.js configuration options here
+  // Next.js configuration options
   reactStrictMode: true,
+  
+  // SWC configuration is now the default in newer Next.js versions
+  // and swcMinify is no longer needed as an explicit option
+  experimental: {
+    // Only keep valid experimental options
+    // forceSwcTransforms is also deprecated in newer Next.js versions
+  }
 }
 
 module.exports = nextConfig

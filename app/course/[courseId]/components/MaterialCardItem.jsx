@@ -29,9 +29,13 @@ const MaterialCardItem = ({ item, studyTypeContent, course, refreshData }) => {
       e.preventDefault(); // Prevent navigation
       setLoading(true);
       let chapters = "";
-      course?.courseLayout?.chapters.forEach((chapter) => {
-        chapters = chapter?.chapterTitle + "," + chapters;
-      });
+      
+      // Check if chapters array exists before trying to iterate
+      if (course?.courseLayout?.chapters && Array.isArray(course.courseLayout.chapters)) {
+        course.courseLayout.chapters.forEach((chapter) => {
+          chapters = chapter?.chapterTitle + "," + chapters;
+        });
+      }
 
       const result = await axios.post("/api/study-type-content", {
         courseId: course?.courseId,
